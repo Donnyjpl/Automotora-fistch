@@ -1,0 +1,25 @@
+import axios from "axios";
+import { getAccessToken } from "./auth";
+
+const api = axios.create({
+  baseURL: "http://localhost:8000/api/",
+  headers: { Authorization: `Bearer ${getAccessToken()}` },
+});
+
+api.interceptors.response.use(
+  response => response,
+  async error => {
+    if (error.response?.status === 401) {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (refreshToken) {
+        const res = await axios.post(`${api.defaults.baseURL}token/refresh/`, { refresh: refreshToken });
+        localStorage.setItem("access_token", res.data.access);
+        error.config.headers["Authorization"] = `Bearer ${res.data.access}`;
+        return axios(error.config);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
