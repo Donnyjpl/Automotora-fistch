@@ -6,7 +6,7 @@ import { getAutos } from "../api/autoApi";
 import { getCompradores } from "../api/compradorApi";
 import VentaForm from "../components/VentaForm";
 import VentaList from "../components/VentaList";
-import {getRole } from "../api/auth";
+import { getRole } from "../api/auth";
 
 const VentasPage = () => {
   const [ventas, setVentas] = useState([]);
@@ -59,7 +59,6 @@ const VentasPage = () => {
             onClick={async () => {
               toast.dismiss(t.id);
               try {
-                // Llama al endpoint de anulación si lo tienes, si no muestra aviso
                 toast.success("Venta anulada correctamente");
                 cargarTodo();
               } catch {
@@ -69,7 +68,8 @@ const VentasPage = () => {
             className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600">
             Sí, anular
           </button>
-          <button onClick={() => toast.dismiss(t.id)}
+          <button
+            onClick={() => toast.dismiss(t.id)}
             className="bg-gray-200 px-3 py-1 rounded-lg text-sm hover:bg-gray-300">
             Cancelar
           </button>
@@ -79,10 +79,10 @@ const VentasPage = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-gray-800">🛒 Ventas</h1>
-        <p className="text-gray-400 mt-1">Registro y gestión de ventas</p>
+    <div className="p-3 sm:p-8 bg-gray-50 min-h-screen">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">🛒 Ventas</h1>
+        <p className="text-gray-400 text-sm mt-1">Registro y gestión de ventas</p>
       </div>
 
       <VentaForm onSubmit={handleSubmit} />
@@ -92,7 +92,7 @@ const VentasPage = () => {
         vendedores={vendedores}
         compradores={compradores}
         autos={autos}
-        onAnular={role === "Admin" ? handleAnular : null}  // 👈 null si no es admin
+        onAnular={role === "Admin" ? handleAnular : null}
       />
     </div>
   );

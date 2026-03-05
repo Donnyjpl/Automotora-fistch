@@ -45,7 +45,7 @@ const VendedorList = ({ vendedores, onEdit, onDelete }) => {
   return (
     <div className="bg-white rounded-2xl shadow">
       {/* Filtro */}
-      <div className="p-4 border-b">
+      <div className="p-3 sm:p-4 border-b">
         <input
           value={busqueda} onChange={handleBusqueda}
           placeholder="🔍 Buscar por nombre, email o teléfono..."
@@ -56,7 +56,39 @@ const VendedorList = ({ vendedores, onEdit, onDelete }) => {
         <p className="text-center text-gray-400 py-8">No se encontraron vendedores.</p>
       ) : (
         <>
-          <table className="w-full text-sm">
+          {/* ── Vista móvil: tarjetas ── */}
+          <div className="flex flex-col divide-y sm:hidden">
+            {datosPaginados.map((v, i) => (
+              <div key={v.id} className="p-4 flex items-start gap-3">
+                <span className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                  {v.nombre[0].toUpperCase()}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-700 text-sm">{v.nombre}</p>
+                  <p className="text-gray-400 text-xs truncate">{v.email}</p>
+                  {v.telefono && (
+                    <p className="text-gray-400 text-xs">📞 {v.telefono}</p>
+                  )}
+                  <div className="flex gap-2 mt-2">
+                    <button onClick={() => onEdit(v)}
+                      className="bg-amber-100 text-amber-600 hover:bg-amber-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                      Editar
+                    </button>
+                    <button onClick={() => handleDelete(v.id)}
+                      className="bg-red-100 text-red-500 hover:bg-red-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+                <span className="text-gray-200 font-bold text-sm flex-shrink-0">
+                  {(paginaActual - 1) * 10 + i + 1}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Vista desktop: tabla ── */}
+          <table className="hidden sm:table w-full text-sm">
             <thead className="bg-gray-50 text-gray-400 uppercase text-xs">
               <tr>
                 <th className="px-4 py-3 text-left">#</th>
@@ -96,6 +128,7 @@ const VendedorList = ({ vendedores, onEdit, onDelete }) => {
               ))}
             </tbody>
           </table>
+
           <div className="p-4">
             <Paginacion paginaActual={paginaActual} totalPaginas={totalPaginas} irAPagina={irAPagina} />
           </div>

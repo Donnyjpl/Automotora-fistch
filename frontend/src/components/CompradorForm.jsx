@@ -45,8 +45,8 @@ const CompradorForm = ({ onSubmit, compradorSeleccionado }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow mb-6">
-      <h2 className="text-xl font-bold text-gray-700 mb-4">
+    <form onSubmit={handleSubmit} className="bg-white p-4 sm:p-6 rounded-2xl shadow mb-6">
+      <h2 className="text-lg sm:text-xl font-bold text-gray-700 mb-4">
         {compradorSeleccionado ? "✏️ Editar Comprador" : "👤 Nuevo Comprador"}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -54,35 +54,35 @@ const CompradorForm = ({ onSubmit, compradorSeleccionado }) => {
           <label className="text-sm text-gray-500 mb-1 block">Nombre</label>
           <input name="nombre" value={formData.nombre} onChange={handleChange}
             placeholder="Ej: Juan" required
-            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm" />
         </div>
         <div>
           <label className="text-sm text-gray-500 mb-1 block">Apellido</label>
           <input name="apellido" value={formData.apellido} onChange={handleChange}
             placeholder="Ej: Pérez" required
-            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm" />
         </div>
         <div>
           <label className="text-sm text-gray-500 mb-1 block">DNI / RUC</label>
           <input name="dni_ruc" value={formData.dni_ruc} onChange={handleChange}
             placeholder="8 dígitos DNI o 11 RUC" required
-            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm" />
         </div>
         <div>
           <label className="text-sm text-gray-500 mb-1 block">Teléfono</label>
           <input name="telefono" value={formData.telefono} onChange={handleChange}
             placeholder="Ej: 987654321" required
-            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm" />
         </div>
         <div className="sm:col-span-2">
           <label className="text-sm text-gray-500 mb-1 block">Dirección</label>
           <input name="direccion" value={formData.direccion} onChange={handleChange}
             placeholder="Ej: Av. Larco 123, Miraflores" required
-            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            className="border p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm" />
         </div>
       </div>
       <button type="submit"
-        className="mt-6 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg transition">
+        className="mt-6 w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg transition text-sm">
         {compradorSeleccionado ? "Actualizar Comprador" : "Registrar Comprador"}
       </button>
     </form>

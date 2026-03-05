@@ -11,10 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,11 +21,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = "django-insecure-0@-b05qp=&r1&-1btxn20!!(e%fjnohchg1x5-s4fbdkn1p&gt"
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG") == "True"
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
+
+# CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'https://5387-2803-c600-d20b-88fe-e09e-3fae-40c-6996.ngrok-free.app',
+]
+
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://5387-2803-c600-d20b-88fe-e09e-3fae-40c-6996.ngrok-free.app",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+# Si estás usando cookies de sesión:
+SESSION_COOKIE_SAMESITE = 'None'  # para que funcione cross-site
+SESSION_COOKIE_SECURE = True       # necesario si usas https (ngrok es https)
+CSRF_COOKIE_SECURE = True          # necesario si usas https
 
 
 # Application definition
@@ -58,9 +73,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
+
 
 
 REST_FRAMEWORK = {

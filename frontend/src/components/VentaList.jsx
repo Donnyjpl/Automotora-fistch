@@ -2,7 +2,6 @@ import { useState } from "react";
 import usePaginacion from "../hooks/usePaginacion";
 import Paginacion from "./Paginacion";
 
-
 const metodoBadge = {
   efectivo: "bg-emerald-100 text-emerald-600",
   credito: "bg-blue-100 text-blue-600",
@@ -77,14 +76,15 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
 
   return (
     <div className="bg-white rounded-2xl shadow">
+
       {/* Filtros */}
-      <div className="p-4 border-b flex flex-col sm:flex-row gap-3">
+      <div className="p-3 sm:p-4 border-b flex flex-col sm:flex-row gap-3">
         <input
           value={busqueda} onChange={handleBusqueda}
           placeholder="🔍 Buscar por vendedor, comprador, auto, ID..."
           className="border p-2 rounded-lg w-full sm:w-1/2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
         <select value={filtroMetodo} onChange={handleMetodo}
-          className="border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          className="border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full sm:w-auto">
           <option value="">Todos los métodos</option>
           <option value="efectivo">Efectivo</option>
           <option value="credito">Crédito</option>
@@ -99,7 +99,62 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
         </div>
       ) : (
         <>
-          <table className="w-full text-sm">
+          {/* ── Vista móvil: tarjetas ── */}
+          <div className="flex flex-col divide-y sm:hidden">
+            {datosPaginados.map((v) => {
+              const vendedor = getVendedor(v.vendedor);
+              const comprador = getComprador(v.comprador);
+              const auto = getAuto(v.auto);
+              return (
+                <div key={v.id} className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className="font-bold text-gray-700 text-sm">
+                        {auto ? `${auto.marca} ${auto.modelo}` : "—"}
+                      </p>
+                      <p className="text-gray-400 text-xs">
+                        #{v.id} · {new Date(v.fecha).toLocaleDateString("es-PE")}
+                      </p>
+                    </div>
+                    <p className="font-extrabold text-indigo-600 text-sm">
+                      S/ {parseFloat(v.total).toLocaleString("es-PE")}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-0.5 mb-2">
+                    <p className="text-gray-500 text-xs">🧑‍💼 {vendedor?.nombre || "—"}</p>
+                    <p className="text-gray-500 text-xs">
+                      👤 {comprador ? `${comprador.nombre} ${comprador.apellido}` : "Sin comprador"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${metodoBadge[v.metodo_pago] || "bg-gray-100 text-gray-500"}`}>
+                      {v.metodo_pago ? v.metodo_pago.charAt(0).toUpperCase() + v.metodo_pago.slice(1) : "—"}
+                    </span>
+                    <span className="text-gray-400 text-xs">{v.numero_cuotas || 1} cuota(s)</span>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <button onClick={() => setVentaModal(v)}
+                      className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                      Ver
+                    </button>
+                    <button onClick={() => handleImprimir(v)}
+                      className="bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                      🖨️
+                    </button>
+                    {onAnular && (
+                      <button onClick={() => onAnular(v.id)}
+                        className="bg-red-100 text-red-500 hover:bg-red-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                        Anular
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ── Vista desktop: tabla ── */}
+          <table className="hidden sm:table w-full text-sm">
             <thead className="bg-gray-50 text-gray-400 uppercase text-xs">
               <tr>
                 <th className="px-4 py-3 text-left">ID</th>
@@ -161,6 +216,7 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
               })}
             </tbody>
           </table>
+
           <div className="p-4">
             <Paginacion paginaActual={paginaActual} totalPaginas={totalPaginas} irAPagina={irAPagina} />
           </div>
@@ -170,10 +226,10 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
       {/* Modal detalle venta */}
       {ventaModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 sm:p-6 relative max-h-[90vh] overflow-y-auto">
             <button onClick={() => setVentaModal(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
-            <h2 className="text-xl font-bold text-gray-800 mb-1">🛒 Detalle de Venta</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">🛒 Detalle de Venta</h2>
             <p className="text-gray-400 text-sm mb-4">Venta #{ventaModal.id} — {new Date(ventaModal.fecha).toLocaleDateString("es-PE")}</p>
             <div className="space-y-3">
               {[
@@ -189,7 +245,7 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
               ].map(({ label, value }) => (
                 <div key={label} className="flex justify-between border-b pb-2">
                   <span className="text-gray-400 text-sm">{label}</span>
-                  <span className="font-semibold text-gray-700 text-sm">{value}</span>
+                  <span className="font-semibold text-gray-700 text-sm text-right ml-4">{value}</span>
                 </div>
               ))}
               <div className="flex justify-between pt-2">
@@ -200,7 +256,7 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
               </div>
             </div>
             <button onClick={() => handleImprimir(ventaModal)}
-              className="mt-6 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition">
+              className="mt-6 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 rounded-lg transition text-sm">
               🖨️ Imprimir boleta
             </button>
           </div>

@@ -56,21 +56,22 @@ const AutoList = ({ autos, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow">
+
       {/* Filtros */}
-      <div className="p-4 border-b flex flex-col sm:flex-row gap-3">
+      <div className="p-3 sm:p-4 border-b flex flex-col sm:flex-row gap-3">
         <input
           value={busqueda} onChange={handleBusqueda}
           placeholder="🔍 Buscar por marca, modelo, color, VIN..."
           className="border p-2 rounded-lg w-full sm:w-1/2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
         <select value={filtroEstado} onChange={handleEstado}
-          className="border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          className="border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full sm:w-auto">
           <option value="">Todos los estados</option>
           <option value="disponible">Disponible</option>
           <option value="reservado">Reservado</option>
           <option value="vendido">Vendido</option>
         </select>
         <select value={filtroCombustible} onChange={handleCombustible}
-          className="border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          className="border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full sm:w-auto">
           <option value="">Todos los combustibles</option>
           <option value="gasolina">Gasolina</option>
           <option value="diesel">Diésel</option>
@@ -87,7 +88,50 @@ const AutoList = ({ autos, onEdit, onDelete }) => {
         </div>
       ) : (
         <>
-          <table className="w-full text-sm">
+          {/* ── Vista móvil: tarjetas ── */}
+          <div className="flex flex-col divide-y sm:hidden">
+            {datosPaginados.map((auto) => (
+              <div key={auto.id} className="p-4">
+                <div className="flex justify-between items-start mb-1">
+                  <p className="font-bold text-gray-700">{auto.marca} {auto.modelo}</p>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${estadoBadge[auto.estado] || "bg-gray-100 text-gray-500"}`}>
+                    {auto.estado}
+                  </span>
+                </div>
+                <p className="text-indigo-600 font-extrabold text-sm mb-2">
+                  S/ {parseFloat(auto.precio).toLocaleString("es-PE")}
+                </p>
+                <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500 mb-3">
+                  <span>📅 {auto.año}</span>
+                  {auto.color && (
+                    <span className="flex items-center gap-1">
+                      <span className="w-2.5 h-2.5 rounded-full border inline-block"
+                        style={{ backgroundColor: auto.color.toLowerCase() }} />
+                      {auto.color}
+                    </span>
+                  )}
+                  <span>{combustibleIcon[auto.combustible]} {auto.combustible || "—"}</span>
+                  {auto.kilometraje != null && (
+                    <span>🛣️ {auto.kilometraje.toLocaleString()} km</span>
+                  )}
+                  {auto.vin && <span>🔖 {auto.vin}</span>}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => onEdit(auto)}
+                    className="bg-amber-100 text-amber-600 hover:bg-amber-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                    Editar
+                  </button>
+                  <button onClick={() => handleDelete(auto.id)}
+                    className="bg-red-100 text-red-500 hover:bg-red-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Vista desktop: tabla ── */}
+          <table className="hidden sm:table w-full text-sm">
             <thead className="bg-gray-50 text-gray-400 uppercase text-xs">
               <tr>
                 <th className="px-4 py-3 text-left">Auto</th>
@@ -148,6 +192,7 @@ const AutoList = ({ autos, onEdit, onDelete }) => {
               ))}
             </tbody>
           </table>
+
           <div className="p-4">
             <Paginacion paginaActual={paginaActual} totalPaginas={totalPaginas} irAPagina={irAPagina} />
           </div>

@@ -1,9 +1,13 @@
 import axios from "axios";
 import { getAccessToken } from "./auth";
 
+// ✅ 1. Cambia localhost por tu URL de ngrok
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/",
-  headers: { Authorization: `Bearer ${getAccessToken()}` },
+  baseURL: "https://5387-2803-c600-d20b-88fe-e09e-3fae-40c-6996.ngrok-free.app/api/",
+  headers: { 
+    Authorization: `Bearer ${getAccessToken()}`,
+    "ngrok-skip-browser-warning": "true"  // ✅ 2. Agrega este header
+  },
 });
 
 api.interceptors.response.use(
@@ -12,7 +16,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       const refreshToken = localStorage.getItem("refresh_token");
       if (refreshToken) {
-        const res = await axios.post(`${api.defaults.baseURL}token/refresh/`, { refresh: refreshToken });
+        const res = await axios.post(
+          `${api.defaults.baseURL}token/refresh/`, 
+          { refresh: refreshToken },
+          { headers: { "ngrok-skip-browser-warning": "true" } } // ✅ también aquí
+        );
         localStorage.setItem("access_token", res.data.access);
         error.config.headers["Authorization"] = `Bearer ${res.data.access}`;
         return axios(error.config);

@@ -45,10 +45,10 @@ const AutosPage = () => {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gray-50">
-      <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-gray-800">🚗 Autos</h1>
-        <p className="text-gray-400 mt-1">Gestión del inventario de autos</p>
+    <div className="p-3 sm:p-8 min-h-screen bg-gray-50">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">🚗 Autos</h1>
+        <p className="text-gray-400 text-sm mt-1">Gestión del inventario de autos</p>
       </div>
 
       <AutoForm onSubmit={handleSubmit} autoSeleccionado={autoSeleccionado} />

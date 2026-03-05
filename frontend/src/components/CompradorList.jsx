@@ -31,7 +31,47 @@ const CompradorList = ({ compradores, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow overflow-hidden">
-      <table className="w-full text-sm">
+
+      {/* ── Vista móvil: tarjetas ── */}
+      <div className="flex flex-col divide-y sm:hidden">
+        {compradores.map((c, i) => (
+          <div key={c.id} className="p-4 flex items-start gap-3">
+            <span className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+              {c.nombre[0].toUpperCase()}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-gray-700 text-sm">
+                {c.nombre} {c.apellido}
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1">
+                {c.dni_ruc && (
+                  <p className="text-gray-400 text-xs">DNI/RUC: {c.dni_ruc}</p>
+                )}
+                {c.telefono && (
+                  <p className="text-gray-400 text-xs">📞 {c.telefono}</p>
+                )}
+              </div>
+              {c.direccion && (
+                <p className="text-gray-400 text-xs mt-0.5 truncate">📍 {c.direccion}</p>
+              )}
+              <div className="flex gap-2 mt-2">
+                <button onClick={() => onEdit(c)}
+                  className="bg-amber-100 text-amber-600 hover:bg-amber-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                  Editar
+                </button>
+                <button onClick={() => handleDelete(c.id)}
+                  className="bg-red-100 text-red-500 hover:bg-red-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+            <span className="text-gray-200 font-bold text-sm flex-shrink-0">{i + 1}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Vista desktop: tabla ── */}
+      <table className="hidden sm:table w-full text-sm">
         <thead className="bg-gray-50 text-gray-400 uppercase text-xs">
           <tr>
             <th className="px-4 py-3 text-left">#</th>
@@ -46,11 +86,13 @@ const CompradorList = ({ compradores, onEdit, onDelete }) => {
           {compradores.map((c, i) => (
             <tr key={c.id} className="border-t hover:bg-gray-50 transition">
               <td className="px-4 py-3 text-gray-400">{i + 1}</td>
-              <td className="px-4 py-3 font-semibold text-gray-700 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
-                  {c.nombre[0].toUpperCase()}
-                </span>
-                {c.nombre} {c.apellido}
+              <td className="px-4 py-3 font-semibold text-gray-700">
+                <div className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    {c.nombre[0].toUpperCase()}
+                  </span>
+                  {c.nombre} {c.apellido}
+                </div>
               </td>
               <td className="px-4 py-3 text-gray-500">{c.dni_ruc}</td>
               <td className="px-4 py-3 text-gray-500">{c.telefono}</td>
@@ -71,6 +113,7 @@ const CompradorList = ({ compradores, onEdit, onDelete }) => {
           ))}
         </tbody>
       </table>
+
     </div>
   );
 };
