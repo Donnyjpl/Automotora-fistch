@@ -97,7 +97,7 @@ print(f"   OK: {len(autos_creados)} autos creados")
 
 print("Creando ventas...")
 metodos = ["efectivo", "credito", "transferencia"]
-cantidad_ventas = min(65, len(autos_creados))
+cantidad_ventas = min(100, len(autos_creados))
 autos_para_vender = random.sample(autos_creados, cantidad_ventas)
 fecha_inicio = date(2025, 1, 1)
 ventas_creadas = 0

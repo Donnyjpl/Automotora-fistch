@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { getVentas, createVenta } from "../api/ventaApi";
+import { getVentas, createVenta, anularVenta} from "../api/ventaApi";
 import { getVendedores } from "../api/vendedorApi";
 import { getAutos } from "../api/autoApi";
 import { getCompradores } from "../api/compradorApi";
 import VentaForm from "../components/VentaForm";
 import VentaList from "../components/VentaList";
 import { getRole } from "../api/auth";
+
+
+
 
 const VentasPage = () => {
   const [ventas, setVentas] = useState([]);
@@ -49,34 +52,35 @@ const VentasPage = () => {
     }
   };
 
-  const handleAnular = async (id) => {
-    toast((t) => (
-      <div className="flex flex-col gap-2">
-        <p className="font-semibold">¿Anular esta venta?</p>
-        <p className="text-xs text-gray-400">Esta acción no se puede deshacer.</p>
-        <div className="flex gap-2">
-          <button
-            onClick={async () => {
-              toast.dismiss(t.id);
-              try {
-                toast.success("Venta anulada correctamente");
-                cargarTodo();
-              } catch {
-                toast.error("Error al anular la venta");
-              }
-            }}
-            className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600">
-            Sí, anular
-          </button>
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="bg-gray-200 px-3 py-1 rounded-lg text-sm hover:bg-gray-300">
-            Cancelar
-          </button>
-        </div>
+const handleAnular = async (id) => {
+  toast((t) => (
+    <div className="flex flex-col gap-2">
+      <p className="font-semibold">¿Anular esta venta?</p>
+      <p className="text-xs text-gray-400">Esta acción no se puede deshacer.</p>
+      <div className="flex gap-2">
+        <button
+          onClick={async () => {
+            toast.dismiss(t.id);
+            try {
+              await anularVenta(id); // ← agrega esto
+              toast.success("Venta anulada correctamente");
+              cargarTodo();
+            } catch {
+              toast.error("Error al anular la venta");
+            }
+          }}
+          className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600">
+          Sí, anular
+        </button>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          className="bg-gray-200 px-3 py-1 rounded-lg text-sm hover:bg-gray-300">
+          Cancelar
+        </button>
       </div>
-    ), { duration: 8000 });
-  };
+    </div>
+  ), { duration: 8000 });
+};
 
   return (
     <div className="p-3 sm:p-8 bg-gray-50 min-h-screen">

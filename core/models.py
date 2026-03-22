@@ -1,4 +1,19 @@
 from django.db import models
+import uuid
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used = models.BooleanField(default=False)
+
+    def is_valid(self):
+        # Expira a los 30 minutos
+        return not self.used and timezone.now() < self.created_at + timedelta(minutes=30)
 
 
 class Vendedor(models.Model):
@@ -114,12 +129,19 @@ class Venta(models.Model):
         default=0,
         help_text="Comisión generada para el vendedor"
     )
+    anulada = models.BooleanField(default=False)  # ← NUEVO
 
     def save(self, *args, **kwargs):
         # Cuando se crea la venta, el auto pasa a vendido
         self.auto.estado = Auto.Estado.VENDIDO
         self.auto.save()
         super().save(*args, **kwargs)
+        
+    def anular(self):  # ← NUEVO
+        self.anulada = True
+        self.auto.estado = Auto.Estado.DISPONIBLE  # libera el auto
+        self.auto.save()
+        self.save()
 
     def __str__(self):
         return f"Venta #{self.id} - {self.auto}"

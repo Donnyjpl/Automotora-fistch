@@ -11,6 +11,7 @@ const metodoBadge = {
 const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDetalle }) => {
   const [busqueda, setBusqueda] = useState("");
   const [filtroMetodo, setFiltroMetodo] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("activas");
   const [ventaModal, setVentaModal] = useState(null);
 
   const getVendedor = (id) => vendedores.find((v) => v.id === id);
@@ -26,13 +27,18 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
     const texto = `${vendedor} ${nombreComprador} ${nombreAuto} ${v.id}`.toLowerCase();
     const matchBusqueda = texto.includes(busqueda.toLowerCase());
     const matchMetodo = filtroMetodo ? v.metodo_pago === filtroMetodo : true;
-    return matchBusqueda && matchMetodo;
+    const matchEstado =
+      filtroEstado === "todas" ? true :
+      filtroEstado === "anuladas" ? v.anulada === true :
+      v.anulada !== true;
+    return matchBusqueda && matchMetodo && matchEstado;
   });
 
   const { datosPaginados, paginaActual, totalPaginas, irAPagina, resetPagina } = usePaginacion(ventasFiltradas, 10);
 
   const handleBusqueda = (e) => { setBusqueda(e.target.value); resetPagina(); };
   const handleMetodo = (e) => { setFiltroMetodo(e.target.value); resetPagina(); };
+  const handleEstado = (e) => { setFiltroEstado(e.target.value); resetPagina(); };
 
   const handleImprimir = (venta) => {
     const vendedor = getVendedor(venta.vendedor);
@@ -90,6 +96,12 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
           <option value="credito">Crédito</option>
           <option value="transferencia">Transferencia</option>
         </select>
+        <select value={filtroEstado} onChange={handleEstado}
+          className="border p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full sm:w-auto">
+          <option value="activas">Solo activas</option>
+          <option value="anuladas">Solo anuladas</option>
+          <option value="todas">Todas</option>
+        </select>
       </div>
 
       {ventasFiltradas.length === 0 ? (
@@ -106,12 +118,19 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
               const comprador = getComprador(v.comprador);
               const auto = getAuto(v.auto);
               return (
-                <div key={v.id} className="p-4">
+                <div key={v.id} className={`p-4 ${v.anulada ? "opacity-60 bg-red-50" : ""}`}>
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <p className="font-bold text-gray-700 text-sm">
-                        {auto ? `${auto.marca} ${auto.modelo}` : "—"}
-                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-bold text-gray-700 text-sm">
+                          {auto ? `${auto.marca} ${auto.modelo}` : "—"}
+                        </p>
+                        {v.anulada && (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-500">
+                            Anulada
+                          </span>
+                        )}
+                      </div>
                       <p className="text-gray-400 text-xs">
                         #{v.id} · {new Date(v.fecha).toLocaleDateString("es-PE")}
                       </p>
@@ -141,7 +160,7 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
                       className="bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
                       🖨️
                     </button>
-                    {onAnular && (
+                    {onAnular && !v.anulada && (
                       <button onClick={() => onAnular(v.id)}
                         className="bg-red-100 text-red-500 hover:bg-red-200 px-3 py-1 rounded-lg text-xs font-semibold transition">
                         Anular
@@ -174,8 +193,17 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
                 const comprador = getComprador(v.comprador);
                 const auto = getAuto(v.auto);
                 return (
-                  <tr key={v.id} className="border-t hover:bg-gray-50 transition">
-                    <td className="px-4 py-3 text-gray-400 font-mono">#{v.id}</td>
+                  <tr key={v.id} className={`border-t transition ${v.anulada ? "bg-red-50 opacity-60" : "hover:bg-gray-50"}`}>
+                    <td className="px-4 py-3 text-gray-400 font-mono">
+                      <div className="flex items-center gap-2">
+                        #{v.id}
+                        {v.anulada && (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-500">
+                            Anulada
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-gray-500">{new Date(v.fecha).toLocaleDateString("es-PE")}</td>
                     <td className="px-4 py-3 font-semibold text-gray-700">
                       {auto ? `${auto.marca} ${auto.modelo}` : "—"}
@@ -203,7 +231,7 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
                           className="bg-gray-100 text-gray-600 hover:bg-gray-200 px-2 py-1 rounded-lg text-xs font-semibold transition">
                           🖨️
                         </button>
-                        {onAnular && (
+                        {onAnular && !v.anulada && (
                           <button onClick={() => onAnular(v.id)}
                             className="bg-red-100 text-red-500 hover:bg-red-200 px-2 py-1 rounded-lg text-xs font-semibold transition">
                             Anular
@@ -229,7 +257,14 @@ const VentaList = ({ ventas, vendedores, compradores, autos, onAnular, onVerDeta
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 sm:p-6 relative max-h-[90vh] overflow-y-auto">
             <button onClick={() => setVentaModal(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">🛒 Detalle de Venta</h2>
+            <div className="flex items-center gap-3 mb-1">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">🛒 Detalle de Venta</h2>
+              {ventaModal.anulada && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-500">
+                  Anulada
+                </span>
+              )}
+            </div>
             <p className="text-gray-400 text-sm mb-4">Venta #{ventaModal.id} — {new Date(ventaModal.fecha).toLocaleDateString("es-PE")}</p>
             <div className="space-y-3">
               {[

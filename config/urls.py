@@ -5,6 +5,7 @@ from core.views import VendedorViewSet, AutoViewSet, VentaViewSet, CompradorView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from core.serializers import CustomTokenObtainPairView
+from core import views
 
 
 router = DefaultRouter()
@@ -25,6 +26,10 @@ urlpatterns = [
     #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # recuperar Usuario y contraseña
+    path("api/auth/request-reset/", views.request_reset),
+    path("api/auth/confirm-reset/", views.confirm_reset),
 
     # Documentación
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

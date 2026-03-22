@@ -1,12 +1,11 @@
 // ✅ Cambia localhost por ngrok
-const API_URL = "https://5387-2803-c600-d20b-88fe-e09e-3fae-40c-6996.ngrok-free.app/api/";
+const API_URL = "http://localhost:8000/api/";  // ✅ sin ngrok
 
 export const login = async (username, password) => {
   const res = await fetch(`${API_URL}token/`, {
     method: "POST",
     headers: { 
       "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true"  // ✅ agrega esto
     },
     body: JSON.stringify({ username, password }),
   });
@@ -28,3 +27,26 @@ export const logout = () => {
 export const getAccessToken = () => localStorage.getItem("access_token");
 export const getRole = () => localStorage.getItem("role");
 export const isAuthenticated = () => !!getAccessToken();
+
+// ─── RECUPERACIÓN DE CONTRASEÑA ──────────────────────────────────────────────
+
+export const requestPasswordReset = async (email) => {
+  const res = await fetch(`${API_URL}auth/request-reset/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) throw new Error("Error al enviar el correo");
+};
+
+export const confirmPasswordReset = async (token, password) => {
+  const res = await fetch(`${API_URL}auth/confirm-reset/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password }),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "Error al restablecer la contraseña");
+  }
+};

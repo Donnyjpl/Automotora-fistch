@@ -158,3 +158,6 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+RESEND_API_KEY = "re_QeegEqrK_EPbSueyhJ3BEbAU9Fa5eaaHq"  # Reemplaza con tu clave real
+FRONTEND_URL = "http://localhost:5173"  # URL de tu React app
